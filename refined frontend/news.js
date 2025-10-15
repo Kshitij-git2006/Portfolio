@@ -4,10 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector("#symptom-checker .container");
   const loading = document.getElementById("loading");
 
+  console.log("Fetching news from backend...");
+
   fetch(`${API_BASE}/news/daily`)
-    .then(res => res.json())
+    .then(res => {
+      console.log("Response received:", res);
+      return res.json();
+    })
     .then(articles => {
-      console.log("Fetched articles from backend:", articles);
+      console.log("Articles fetched:", articles);
 
       if (loading) loading.remove();
 
@@ -30,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>${article.description || 'No description available.'}</p>
           </div>
         `;
-
         container.appendChild(block);
       });
     })
