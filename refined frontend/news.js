@@ -1,49 +1,43 @@
-// Define the base URL for your live API on Render
-const API_BASE = "https://java-miniproject.onrender.com/api";
+// news.js
 
 document.addEventListener("DOMContentLoaded", () => {
-    const container = document.querySelector("#symptom-checker .container");
-    const loading = document.getElementById("loading");
+  const loading = document.getElementById("loading");
 
-    // Use the API_BASE variable to build the correct URL
-    fetch(`${API_BASE}/news/daily`)
-        .then(res => {
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
-            return res.json();
-        })
-        .then(articles => {
-            if (loading) {
-                loading.remove();
-            }
+  // ✅ Replace with your real API endpoint if you have one
+  const apiUrl = "https://newsapi.org/v2/top-headlines?category=health&country=in&apiKey=0603a2c3b2c14251a0fef2daeea3bd01";
 
-            if (!articles || articles.length === 0) {
-                container.insertAdjacentHTML("beforeend", '<p>No news available right now.</p>');
-                return;
-            }
+  fetch(apiUrl)
+    .then(res => res.json())
+    .then(data => {
+      loading.style.display = "none";
+      const container = document.querySelector("#symptom-checker .container");
 
-            articles.forEach(article => {
-                const block = document.createElement("div");
-                block.className = "alternating-grid";
-                block.style.marginTop = "80px";
+      if (!data.articles || data.articles.length === 0) {
+        container.innerHTML += "<p>No news available at the moment.</p>";
+        return;
+      }
 
-                block.innerHTML = `
-                    <div class="image-placeholder">
-                        <img src="${article.urlToImage || 'logo.jpg'}" alt="News Image" style="width:100%; height:auto; border-radius: 8px;">
-                    </div>
-                    <div class="text-block-background">
-                        <h3><a href="${article.url}" target="_blank" rel="noopener noreferrer">${article.title}</a></h3>
-                        <p>${article.description || 'No description available.'}</p>
-                    </div>
-                `;
-                container.appendChild(block);
-            });
-        })
-        .catch(err => {
-            console.error("Error loading news:", err);
-            if (loading) {
-                loading.textContent = "⚠ Unable to load news. Please try again later.";
-            }
-        });
+      const newsList = document.createElement("div");
+      newsList.classList.add("news-grid");
+
+      data.articles.slice(0, 6).forEach(article => {
+        const card = document.createElement("div");
+        card.classList.add("news-card");
+
+        card.innerHTML = `
+          <img src="${article.urlToImage || 'default-news.jpg'}" alt="">
+          <h3>${article.title}</h3>
+          <p>${article.description || ''}</p>
+          <a href="${article.url}" target="_blank">Read More</a>
+        `;
+
+        newsList.appendChild(card);
+      });
+
+      container.appendChild(newsList);
+    })
+    .catch(err => {
+      loading.textContent = "Failed to load news.";
+      console.error(err);
+    });
 });
