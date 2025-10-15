@@ -1,5 +1,3 @@
-const API_BASE = "https://java-miniproject.onrender.com/api";
-
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector("#symptom-checker .container");
   const loading = document.getElementById("loading");
@@ -8,10 +6,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("Fetching news from backend...");
 
-  // Add a timeout in case backend is slow
   const loadingTimeout = setTimeout(() => {
     loading.textContent = "⚠ News taking too long to load. Try again later.";
-  }, 15000); // 15 seconds
+  }, 15000);
 
   fetch(`${API_BASE}/news/daily`)
     .then(res => {
@@ -21,8 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then(articles => {
       clearTimeout(loadingTimeout);
-
-      console.log("Articles fetched:", articles);
       if (loading) loading.remove();
 
       if (!articles || articles.length === 0) {
@@ -34,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       articles.forEach(article => {
-        console.log("Appending article:", article.title); // debug
         const block = document.createElement("div");
         block.className = "alternating-grid";
         block.style.marginTop = "40px";
